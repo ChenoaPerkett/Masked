@@ -25,7 +25,7 @@
             <p> Conspiracy theories ,critically examine and explore their origins, evidence, and
                 cultural impact</p>
         </div>
-        <div id="forms" class="card col-4 mt-5 offset-2">
+        <div id="forms" class="card col-4 mt-5 offset-2 p-0">
             <div id="login-form" class="active">
                 <form action="validate-login.php" method="post">
                     <div class="row card-header">
