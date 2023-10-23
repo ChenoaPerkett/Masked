@@ -132,6 +132,7 @@
         $stmt->close();
     }
     ?>
+    <script src='SignUpValidation.js'></script>
     <script>
         const loginLink = document.getElementById('login-link');
         const registerLink = document.getElementById('register-link');
