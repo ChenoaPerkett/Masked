@@ -47,7 +47,7 @@ $conn->close();
             <div id="headings" class="card col-4 mt-4 mb-4 p-3 offset-4">
                 <h1>Profile page </h1>
                 <hr />
-                <img src="images/logo.png" alt="Logo" class="logo">
+                <img src="<?php echo $row['profile_image'] ? $row['profile_image'] : 'images/logo.png'; ?>" alt="Profile Image" id="profileImage">
                 <hr />
                 <p>Name: <?php echo $row['name'] ?></p>
                 <p>Surname: <?php echo $row['surname']  ?></p>
@@ -66,6 +66,7 @@ $conn->close();
             </div>
         </div>
     </section>
+    <script src='profile.js'></script>
 </body>
 
 </html>

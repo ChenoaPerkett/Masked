@@ -19,12 +19,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $birthday = $_POST["birthday"];
     $email = $_POST["email"];
 
+    if (isset($_FILES['profile_image'])) {
+    $file = $_FILES['profile_image'];
+    $uploadDirectory = 'profile_images/';
+    $fileName = $file['name'];
+    $targetPath = $uploadDirectory . $fileName;
+
+    if (move_uploaded_file($file['tmp_name'], $targetPath)) {
+        $query = "UPDATE users SET name='$name', surname='$surname', birthday='$birthday', email='$email' , profile_image='$targetPath' WHERE user_id='$userID'";
+        if ($conn->query($query) === TRUE) {
+            echo "Record successful";
+        } else {
+            echo "Error updating record: " . $conn->error;
+        }
+    } else {
+        // Error handling if the file upload fails
+        echo 'error';
+    }
+} else {
     $query = "UPDATE users SET name='$name', surname='$surname', birthday='$birthday', email='$email' WHERE user_id='$userID'";
     if ($conn->query($query) === TRUE) {
         echo "Record updated successfully";
     } else {
         echo "Error updating record: " . $conn->error;
-    }
+    };
+}
+
 }
 
 $query = "SELECT * FROM users WHERE user_id = '$userID'";
@@ -52,7 +72,9 @@ $conn->close();
 </head>
 
 <body>
-    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>">
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" enctype="multipart/form-data">
+        <input type="file" name="profile_image" id="fileUpload" accept="image/*">
+        <img id="profileImage" src="<?php echo $row['profile_image'] ? $row['profile_image'] : 'images/logo.png'; ?>"  alt="Profile Image">
         Name: <input type="text" name="name" value="<?php echo $row['name'] ?>"><br>
         Surname: <input type="text" name="surname" value="<?php echo $row['surname'] ?>"><br>
         Birthday: <input type="date" name="birthday" value="<?php echo $row['birthday'] ?>"><br>
