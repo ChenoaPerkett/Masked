@@ -71,7 +71,7 @@ $conn->close();
         </div>
         <h1 class="col-3 mt-3 offset-2">UNMASKED</h1>
         <div id=" links" class="col-2 mt-3 offset-2">
-            <a href="profile.php">Profile</a>
+            <a href=<?php echo "'profile.php?user=" .$userID. "'" ?>>Profile</a>
             <a href="#"><button class="btn btn">LogOut</button></a>
         </div>
     </div>

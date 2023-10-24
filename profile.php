@@ -14,8 +14,30 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+//$currID = $_SESSION['user_id'];
 $userID = $_SESSION['user_id'];
-$query = "SELECT * FROM users WHERE user_id = '$userID'";
+$profileUserID = $_GET['user']; // User whose profile is being viewed
+
+if (isset($_POST['follow'])) {
+    // Check if the current user is already following the profile user
+    $checkQuery = "SELECT * FROM followers WHERE follower_id = '$userID' AND following_id = '$profileUserID'";
+    $checkResult = $conn->query($checkQuery);
+    
+    if ($checkResult->num_rows == 0) {
+        // Current user is not following, so follow them
+        $followQuery = "INSERT INTO followers (follower_id, following_id) VALUES ('$userID', '$profileUserID')";
+        $conn->query($followQuery);
+    } else {
+        // Current user is already following, so unfollow them
+        $unfollowQuery = "DELETE FROM followers WHERE follower_id = '$userID' AND following_id = '$profileUserID'";
+        $conn->query($unfollowQuery);
+    }
+}
+
+// Check if the current user and the profile user are friends
+$checkFriendsQuery = "SELECT * FROM friends WHERE (user_id = '$userID' AND friend_id = '$profileUserID') OR (user_id = '$profileUserID' AND friend_id = '$userID')";
+$checkFriendsResult = $conn->query($checkFriendsQuery);
+$query = "SELECT * FROM users WHERE user_id = '$profileUserID'";
 $result = $conn->query($query);
 $row = mysqli_fetch_array($result);
 $conn->close();
@@ -52,21 +74,50 @@ $conn->close();
                 <p>Name: <?php echo $row['name'] ?></p>
                 <p>Surname: <?php echo $row['surname']  ?></p>
                 <p>Birthday: <?php echo $row['birthday'] ?></p>
-                <p>Email: <?php echo $row['email'] ?></p>
-                <div id="catList">
-                    <a href="category.php">Create Category </a> | <a href="#"> Saved Category </a>
+                <?php
+            if ($profileUserID == $userID)
+                echo "<p>Email:".  $row['email']  ."</p>
+                <div id='catList'>
+                    <a href='category.php'>Create Category </a> | <a href='#'> Saved Category </a>
                 </div>
                 <div>
-                    <a href="EditProfile.php"><button class='btn btn-dark'>Edit</button></a>
-                    <a href="home.php"><button><svg height="16" width="16" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1024 1024">
-                                <path d="M874.690416 495.52477c0 11.2973-9.168824 20.466124-20.466124 20.466124l-604.773963 0 188.083679 188.083679c7.992021 7.992021 7.992021 20.947078 0 28.939099-4.001127 3.990894-9.240455 5.996574-14.46955 5.996574-5.239328 0-10.478655-1.995447-14.479783-5.996574l-223.00912-223.00912c-3.837398-3.837398-5.996574-9.046027-5.996574-14.46955 0-5.433756 2.159176-10.632151 5.996574-14.46955l223.019353-223.029586c7.992021-7.992021 20.957311-7.992021 28.949332 0 7.992021 8.002254 7.992021 20.957311 0 28.949332l-188.073446 188.073446 604.753497 0C865.521592 475.058646 874.690416 484.217237 874.690416 495.52477z"></path>
+                    <a href='EditProfile.php'><button class='btn btn-dark'>Edit</button></a>
+                    <a href='home.php'><button><svg height='16' width='16' xmlns='http://www.w3.org/2000/svg' version='1.1' viewBox='0 0 1024 1024'>
+                                <path d='M874.690416 495.52477c0 11.2973-9.168824 20.466124-20.466124 20.466124l-604.773963 0 188.083679 188.083679c7.992021 7.992021 7.992021 20.947078 0 28.939099-4.001127 3.990894-9.240455 5.996574-14.46955 5.996574-5.239328 0-10.478655-1.995447-14.479783-5.996574l-223.00912-223.00912c-3.837398-3.837398-5.996574-9.046027-5.996574-14.46955 0-5.433756 2.159176-10.632151 5.996574-14.46955l223.019353-223.029586c7.992021-7.992021 20.957311-7.992021 28.949332 0 7.992021 8.002254 7.992021 20.957311 0 28.949332l-188.073446 188.073446 604.753497 0C865.521592 475.058646 874.690416 484.217237 874.690416 495.52477z'></path>
                             </svg><span>Back</span></button>
                     </a>
-                </div>
+                </div>"
+            ?><!-- Display friends list if they are friends -->
+            <?php if ($checkFriendsResult->num_rows > 0) : ?>
+                <p>Friends:</p>
+                <!-- Fetch and display the friends list -->
+                <?php
+                $friendsListQuery = "SELECT users.name, users.surname FROM friends
+                    INNER JOIN users ON (friends.user_id = users.user_id OR friends.friend_id = users.user_id)
+                    WHERE (friends.user_id = '$profileUserID' OR friends.friend_id = '$profileUserID') AND users.user_id != '$profileUserID'";
+                $friendsListResult = $conn->query($friendsListQuery);
+                while ($friend = mysqli_fetch_array($friendsListResult)) {
+                    echo "<p>{$friend['name']} {$friend['surname']}</p>";
+                }
+                ?>
+            <?php endif; ?>
+            <!-- Display Follow/Unfollow button -->
+            <?php if ($userID !== $profileUserID) : ?>
+                <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?user=" . $profileUserID; ?>">
+                    <button type="submit" name="follow">
+                        <?php
+                        if ($checkResult->num_rows == 0) {
+                            echo "Follow";
+                        } else {
+                            echo "Unfollow";
+                        }
+                        ?>
+                    </button>
+                </form>
+            <?php endif; ?>
             </div>
         </div>
     </section>
-    <script src='profile.js'></script>
 </body>
 
 </html>
