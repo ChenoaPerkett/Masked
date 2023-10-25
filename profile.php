@@ -40,7 +40,7 @@ if (isset($_POST['follow'])) {
         // Current user is already following, so unfollow them
         $unfollowQuery = "DELETE FROM followers WHERE follower_id = '$userID' AND following_id = '$profileUserID'";
         $conn->query($unfollowQuery);
-        
+
         $checkBackQuery = "SELECT * FROM followers WHERE follower_id = '$profileUserID' AND following_id = '$userID'";
         $checkBackResult = $conn->query($checkBackQuery);
 
@@ -60,10 +60,10 @@ $friendsListQuery = "SELECT users.name, users.surname
                          FROM users
                          INNER JOIN friends ON (friends.user_id = users.user_id OR friends.friend_id = users.user_id)
                          WHERE (friends.user_id = '$profileUserID' OR friends.friend_id = '$profileUserID')";
-                        // AND users.user_id != '$profileUserID'"; // Exclude the user's own entry
+// AND users.user_id != '$profileUserID'"; // Exclude the user's own entry
 
 $friendsListResult = $conn->query($friendsListQuery);
-    
+
 $query = "SELECT * FROM users WHERE user_id = '$profileUserID'";
 $result = $conn->query($query);
 $row = mysqli_fetch_array($result);
@@ -86,7 +86,8 @@ $conn->close();
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="style/profile.css" />
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="fetchProfileArticles.js"></script>
     <title>Profile</title>
 </head>
 
@@ -119,11 +120,11 @@ $conn->close();
                     <p>Friends:</p>
                     <!-- Fetch and display the friends list -->
                     <?php
-        while ($friend = mysqli_fetch_array($friendsListResult)) {
-            echo "<p>{$friend['name']} {$friend['surname']}</p>";
-        }
-    
-    ?>
+                    while ($friend = mysqli_fetch_array($friendsListResult)) {
+                        echo "<p>{$friend['name']} {$friend['surname']}</p>";
+                    }
+
+                    ?>
                 <?php endif; ?>
                 <!-- Display Follow/Unfollow button -->
                 <?php if ($userID == $profileUserID) : ?>
@@ -140,8 +141,11 @@ $conn->close();
                     </form>
                 <?php endif; ?>
             </div>
+            <div id="articles"></div>
         </div>
     </section>
 </body>
-
+<script>
+     var profileUserID = <?php echo $profileUserID; ?>;
+</script>
 </html>
