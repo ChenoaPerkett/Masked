@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 $servername = "localhost";
@@ -18,25 +17,53 @@ if ($conn->connect_error) {
 $userID = $_SESSION['user_id'];
 $profileUserID = $_GET['user']; // User whose profile is being viewed
 
+// Check if the current user is already following the profile user
+$checkQuery = "SELECT * FROM followers WHERE follower_id = '$userID' AND following_id = '$profileUserID'";
+$checkResult = $conn->query($checkQuery);
+
 if (isset($_POST['follow'])) {
-    // Check if the current user is already following the profile user
-    $checkQuery = "SELECT * FROM followers WHERE follower_id = '$userID' AND following_id = '$profileUserID'";
-    $checkResult = $conn->query($checkQuery);
-    
+
     if ($checkResult->num_rows == 0) {
         // Current user is not following, so follow them
         $followQuery = "INSERT INTO followers (follower_id, following_id) VALUES ('$userID', '$profileUserID')";
         $conn->query($followQuery);
+
+        $checkBackQuery = "SELECT * FROM followers WHERE follower_id = '$profileUserID' AND following_id = '$userID'";
+        $checkBackResult = $conn->query($checkBackQuery);
+
+        if ($checkBackResult->num_rows > 0) {
+            // They follow each other, so add to friends database
+            $addFriendQuery = "INSERT INTO friends (user_id, friend_id) VALUES ('$userID', '$profileUserID')";
+            $conn->query($addFriendQuery);
+        }
     } else {
         // Current user is already following, so unfollow them
         $unfollowQuery = "DELETE FROM followers WHERE follower_id = '$userID' AND following_id = '$profileUserID'";
         $conn->query($unfollowQuery);
+        
+        $checkBackQuery = "SELECT * FROM followers WHERE follower_id = '$profileUserID' AND following_id = '$userID'";
+        $checkBackResult = $conn->query($checkBackQuery);
+
+        if ($checkBackResult->num_rows == 0) {
+            // They no longer follow each other, so remove from friends database
+            $removeFriendQuery = "DELETE FROM friends WHERE (user_id = '$userID' AND friend_id = '$profileUserID') OR (user_id = '$profileUserID' AND friend_id = '$userID')";
+            $conn->query($removeFriendQuery);
+        }
     }
 }
 
 // Check if the current user and the profile user are friends
 $checkFriendsQuery = "SELECT * FROM friends WHERE (user_id = '$userID' AND friend_id = '$profileUserID') OR (user_id = '$profileUserID' AND friend_id = '$userID')";
 $checkFriendsResult = $conn->query($checkFriendsQuery);
+
+$friendsListQuery = "SELECT users.name, users.surname 
+                         FROM users
+                         INNER JOIN friends ON (friends.user_id = users.user_id OR friends.friend_id = users.user_id)
+                         WHERE (friends.user_id = '$profileUserID' OR friends.friend_id = '$profileUserID')";
+                        // AND users.user_id != '$profileUserID'"; // Exclude the user's own entry
+
+$friendsListResult = $conn->query($friendsListQuery);
+    
 $query = "SELECT * FROM users WHERE user_id = '$profileUserID'";
 $result = $conn->query($query);
 $row = mysqli_fetch_array($result);
@@ -75,8 +102,8 @@ $conn->close();
                 <p>Surname: <?php echo $row['surname']  ?></p>
                 <p>Birthday: <?php echo $row['birthday'] ?></p>
                 <?php
-            if ($profileUserID == $userID)
-                echo "<p>Email:".  $row['email']  ."</p>
+                if ($profileUserID == $userID)
+                    echo "<p>Email:" .  $row['email']  . "</p>
                 <div id='catList'>
                     <a href='category.php'>Create Category </a> | <a href='#'> Saved Category </a>
                 </div>
@@ -87,34 +114,31 @@ $conn->close();
                             </svg><span>Back</span></button>
                     </a>
                 </div>"
-            ?><!-- Display friends list if they are friends -->
-            <?php if ($checkFriendsResult->num_rows > 0) : ?>
-                <p>Friends:</p>
-                <!-- Fetch and display the friends list -->
-                <?php
-                $friendsListQuery = "SELECT users.name, users.surname FROM friends
-                    INNER JOIN users ON (friends.user_id = users.user_id OR friends.friend_id = users.user_id)
-                    WHERE (friends.user_id = '$profileUserID' OR friends.friend_id = '$profileUserID') AND users.user_id != '$profileUserID'";
-                $friendsListResult = $conn->query($friendsListQuery);
-                while ($friend = mysqli_fetch_array($friendsListResult)) {
-                    echo "<p>{$friend['name']} {$friend['surname']}</p>";
-                }
-                ?>
-            <?php endif; ?>
-            <!-- Display Follow/Unfollow button -->
-            <?php if ($userID !== $profileUserID) : ?>
-                <form method="post" action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]) . "?user=" . $profileUserID; ?>">
-                    <button type="submit" name="follow">
-                        <?php
-                        if ($checkResult->num_rows == 0) {
-                            echo "Follow";
-                        } else {
-                            echo "Unfollow";
-                        }
-                        ?>
-                    </button>
-                </form>
-            <?php endif; ?>
+                ?><!-- Display friends list if they are friends -->
+                <?php if ($checkFriendsResult->num_rows > 0) : ?>
+                    <p>Friends:</p>
+                    <!-- Fetch and display the friends list -->
+                    <?php
+        while ($friend = mysqli_fetch_array($friendsListResult)) {
+            echo "<p>{$friend['name']} {$friend['surname']}</p>";
+        }
+    
+    ?>
+                <?php endif; ?>
+                <!-- Display Follow/Unfollow button -->
+                <?php if ($userID == $profileUserID) : ?>
+                    <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?user=' . $profileUserID; ?>">
+                        <button type="submit" name="follow">
+                            <?php
+                            if ($checkResult->num_rows == 0) {
+                                echo "Follow";
+                            } else {
+                                echo "Unfollow";
+                            }
+                            ?>
+                        </button>
+                    </form>
+                <?php endif; ?>
             </div>
         </div>
     </section>
