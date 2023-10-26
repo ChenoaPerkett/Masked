@@ -13,6 +13,41 @@ if ($conn->connect_error) {
 
 $userID = $_SESSION['user_id'];
 
+if (isset($_POST['deleteAccount'])) {
+    // Delete the user's articles from ReadArticles first
+    $deleteReadArticlesQuery = "DELETE FROM ReadArticles WHERE article_id IN (SELECT article_id FROM Articles WHERE user_id = '$userID')";
+    
+    if ($conn->query($deleteReadArticlesQuery) === TRUE) {
+        // Delete the user's articles from Category_Articles
+        $deleteCategoryArticlesQuery = "DELETE FROM Category_Articles WHERE article_id IN (SELECT article_id FROM Articles WHERE user_id = '$userID')";
+        
+        if ($conn->query($deleteCategoryArticlesQuery) === TRUE) {
+            // Now delete the user's articles
+            $deleteArticlesQuery = "DELETE FROM Articles WHERE user_id = '$userID'";
+            
+            if ($conn->query($deleteArticlesQuery) === TRUE) {
+                // User's articles have been deleted, now delete the user
+                $deleteUserQuery = "DELETE FROM users WHERE user_id = '$userID'";
+                
+                if ($conn->query($deleteUserQuery) === TRUE) {
+                    // User has been deleted successfully, log out and redirect to index.php
+                    session_destroy(); // Destroy the current session
+                    header("Location: index.php");
+                    exit();
+                } else {
+                    echo "Error deleting user: " . $conn->error;
+                }
+            } else {
+                echo "Error deleting articles: " . $conn->error;
+            }
+        } else {
+            echo "Error deleting articles from Category_Articles: " . $conn->error;
+        }
+    } else {
+        echo "Error deleting articles from ReadArticles: " . $conn->error;
+    }
+}
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = $_POST["name"];
     $surname = $_POST["surname"];
@@ -36,14 +71,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Error handling if the file upload fails
         echo 'error';
     }
-} else {
+} 
     $query = "UPDATE users SET name='$name', surname='$surname', birthday='$birthday', email='$email' WHERE user_id='$userID'";
     if ($conn->query($query) === TRUE) {
         echo "Record updated successfully";
     } else {
         echo "Error updating record: " . $conn->error;
     };
-}
+
 
 }
 
@@ -81,6 +116,9 @@ $conn->close();
         Email: <input type="email" name="email" value="<?php echo $row['email'] ?>"><br>
         <input type="submit">
     </form>
+    <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?user=' . $userID; ?>">
+    <button type="submit" name="deleteAccount" class="btn btn-danger">Delete Account</button>
+</form>
 </body>
 
 </html>
