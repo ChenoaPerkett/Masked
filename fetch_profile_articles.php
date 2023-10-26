@@ -34,7 +34,34 @@ if ($result->num_rows > 0) {
         $readArticles[] = $row;
     }
 }
+$combinedArticles = [];
+
+// Loop through read articles
+foreach ($readArticles as $readArticle) {
+    $articleId = $readArticle['article_id'];
+    
+    // Check if the article is not already in the combined array
+    if (!array_key_exists($articleId, $combinedArticles)) {
+        $combinedArticles[$articleId] = $readArticle;
+    }
+}
+
+// Loop through written articles
+foreach ($writtenArticles as $writtenArticle) {
+    $articleId = $writtenArticle['article_id'];
+    
+    // Check if the article is not already in the combined array
+    if (!array_key_exists($articleId, $combinedArticles)) {
+        $combinedArticles[$articleId] = $writtenArticle;
+    }
+}
+
+// Convert the combined array to a numerically indexed array (optional)
+// $combinedArticles = array_values($combinedArticles);
+
+// Now $combinedArticles contains a unique set of articles from both $readArticles and $writtenArticles
+
 
 $conn->close();
 
-echo json_encode($writtenArticles , $readArticles);
+echo json_encode($combinedArticles);
