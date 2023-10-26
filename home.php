@@ -79,8 +79,10 @@ $conn->close();
     <div id="feed" class="col-10 offset-1">
         <div class="nav feed mt-3 offset-5">
             <div class="links">
-                <a href="#">Local </a>|
-                <a href="#"> Global</a>
+    <a href="javascript:void(0);" id="localLink" onclick="toggleArticles('local')">Local</a> |
+    <a href="javascript:void(0);" id="globalLink" onclick="toggleArticles('global')">Global</a>
+                <!-- <a href="#">Local </a>|
+                <a href="#"> Global</a> -->
             </div>
         </div>
         <div id="archives" class="col-10 offset-1">
@@ -119,5 +121,7 @@ $conn->close();
         </div>
 
 </body>
-
+<script>
+     var UserID = <?php echo $userID; ?>;
+</script>
 </html>

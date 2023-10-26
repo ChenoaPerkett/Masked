@@ -12,7 +12,7 @@ if ($conn->connect_error) {
 
 $profileId = $_GET['user']; // Replace with the actual profile ID of the user
 // Retrieve articles written by the user's profile
-$query = "SELECT * FROM Articles WHERE user_id = $profileId";
+$query = "SELECT * FROM Articles WHERE user_id = $profileId ORDER BY date DESC";
 $result = $conn->query($query);
 
 $writtenArticles = [];
@@ -25,7 +25,8 @@ if ($result->num_rows > 0) {
 // Retrieve articles read by the user's profile
 $query = "SELECT ra.read_id, a.* FROM ReadArticles ra
           INNER JOIN Articles a ON ra.article_id = a.article_id
-          WHERE ra.user_id = $profileId";
+          WHERE ra.user_id = $profileId
+          ORDER BY date DESC";
 $result = $conn->query($query);
 
 $readArticles = [];

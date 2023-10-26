@@ -1,9 +1,16 @@
-function fetchArticles() {
+function fetchArticles(UserID, articleType) {
+    var url;
+    if (articleType === 'global') {
+        url = 'fetch_articles.php'; // Global articles URL
+    } else {
+        url = 'fetch_local_articles.php?user=' + UserID; // Local articles URL
+    }
     $.ajax({
-        url: 'fetch_articles.php', // The URL of the server-side PHP script
+        url: url, // The URL of the server-side PHP script
         method: 'GET',
         dataType: 'json', // Expect JSON response
         success: function (data) {
+            $('#articles').empty();
             // Iterate through articles and append them to the "articles" div
             $.each(data, function (index, article) {
                 // Create a Bootstrap card for each article
@@ -44,7 +51,15 @@ function fetchArticles() {
     });
 }
 
+// Function to toggle between "Local" and "Global" articles
+function toggleArticles(articleType) {
+    $('#localLink, #globalLink').removeClass('active'); // Remove active class from both links
+    $('#' + articleType + 'Link').addClass('active'); // Add active class to the clicked link
+    fetchArticles(UserID, articleType); // Fetch articles based on the type
+}
+
 // Call the fetchArticles function to load articles on page load
 $(document).ready(function () {
-    fetchArticles();
+    $('#localLink').addClass('active'); // Add active class to the "Local" link
+    fetchArticles(UserID, 'local'); // Load local articles initially // Use the JavaScript variable
 });
