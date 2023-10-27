@@ -24,6 +24,7 @@ img{
     background-color: #ffffffd5;
     border-radius: 5px;
     min-height: 60vh;
+    max-height: 400px; /* Adjust the max height as needed */
     overflow-y: auto;
 }
 body{

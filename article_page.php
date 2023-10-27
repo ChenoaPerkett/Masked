@@ -18,8 +18,24 @@ $articleID = $_GET['articleID']; // User whose profile is being viewed
 $articlesQuery = "SELECT * FROM articles WHERE article_id = '$articleID'";
 $articlesResult = $conn->query($articlesQuery);
 
+$reviewsQuery = "SELECT users.name AS user_name, review.review_text, review.image
+                 FROM review
+                 INNER JOIN users ON review.user_id = users.user_id
+                 WHERE review.article_id = '$articleID'";
+$reviewsResult = $conn->query($reviewsQuery);
+
+
+$ratingQuery = "SELECT users.name AS user_name, rating.value
+                 FROM rating
+                 INNER JOIN users ON rating.user_id = users.user_id
+                 WHERE rating.article_id = '$articleID'";
+$ratingResult = $conn->query($ratingQuery);
+
+
 // Fetch the data for the article
 $row = mysqli_fetch_array($articlesResult);
+$review = mysqli_fetch_array($reviewsResult);
+$rating = mysqli_fetch_array($ratingResult);
 $conn->close();
 ?>
 
@@ -45,7 +61,7 @@ $conn->close();
 <body>
     <section class="row">
         <div id="profile" class="row col-10 mt-3 offset-1">
-            <div id="headings" class="card col-4 mt-4 mb-4 p-3 offset-4">
+            <div id="headings" class="card col-6 mt-4 mb-4 p-3 offset-2">
                 <h1>Article page</h1>
                 <hr />
                 <hr />
@@ -66,6 +82,35 @@ $conn->close();
                         <a href='home.php'><button>Back</button>
                     </a>
             </div>
+            <div class= "row col-6 mt-4 mb-4 p-3 offset-2">
+                    <div id="reviews" class="col-6">
+                    <h2>Reviews</h2>
+                    <?php
+                    // Iterate through reviews and display them
+                        for ($i = 0; $i < $reviewsResult->num_rows; $i++) {
+                            echo '<p><strong>' . $review['user_name'] . '</strong></p>';
+                            echo '<p>' . $review['review_text'] . '</p>';
+                    
+                            // Check if there is a review image
+                            if ($review['image']) {
+                                echo '<img src="' . $review['image'] . '" alt="Review Image">';
+                            }
+                        }
+                        ?>
+                </div>
+
+                <!-- Add a div for ratings -->
+                <div id="ratings" class="col-6">
+                    <h2>Ratings</h2>
+                    <?php
+                    // Iterate through reviews and display them
+                        for ($i = 0; $i < $ratingResult->num_rows; $i++) {
+                            echo '<p><strong>' . $rating['user_name'] . '</strong> gave a rating of : ' . $rating['value'] . '</p>';
+                
+                        }
+                        ?>
+                </div>
+                </div>
         </div>
     </section>
 </body>
