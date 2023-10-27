@@ -106,7 +106,6 @@ $conn->close();
                     // Iterate through reviews and display them
                         for ($i = 0; $i < $ratingResult->num_rows; $i++) {
                             echo '<p><strong>' . $rating['user_name'] . '</strong> gave a rating of : ' . $rating['value'] . '</p>';
-                
                         }
                         ?>
                 </div>

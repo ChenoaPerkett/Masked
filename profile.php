@@ -13,7 +13,7 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-//$currID = $_SESSION['user_id'];
+
 $userID = $_SESSION['user_id'];
 $profileUserID = $_GET['user']; // User whose profile is being viewed
 
@@ -127,7 +127,7 @@ $conn->close();
                     ?>
                 <?php endif; ?>
                 <!-- Display Follow/Unfollow button -->
-                <?php if ($userID == $profileUserID) : ?>
+                <?php if ($userID !== $profileUserID) : ?>
                     <form method="post" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']) . '?user=' . $profileUserID; ?>">
                         <button type="submit" name="follow">
                             <?php
@@ -141,7 +141,12 @@ $conn->close();
                     </form>
                 <?php endif; ?>
             </div>
-            <div id="articles"></div>
+            <div class= "row col-6 mt-4 mb-4 p-3 offset-3">
+                    <div id="articles">
+                    <h2>Written Reviews and Read Articles</h2>
+                    
+                    </div>
+            </div>
         </div>
     </section>
 </body>

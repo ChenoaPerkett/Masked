@@ -14,24 +14,23 @@ if ($conn->connect_error) {
 $userID = $_SESSION['user_id'];
 
 if (isset($_POST['deleteAccount'])) {
-    // Delete the user's articles from ReadArticles first
+    
     $deleteReadArticlesQuery = "DELETE FROM ReadArticles WHERE article_id IN (SELECT article_id FROM Articles WHERE user_id = '$userID')";
     
     if ($conn->query($deleteReadArticlesQuery) === TRUE) {
-        // Delete the user's articles from Category_Articles
+       
         $deleteCategoryArticlesQuery = "DELETE FROM Category_Articles WHERE article_id IN (SELECT article_id FROM Articles WHERE user_id = '$userID')";
         
         if ($conn->query($deleteCategoryArticlesQuery) === TRUE) {
-            // Now delete the user's articles
+            
             $deleteArticlesQuery = "DELETE FROM Articles WHERE user_id = '$userID'";
             
             if ($conn->query($deleteArticlesQuery) === TRUE) {
-                // User's articles have been deleted, now delete the user
                 $deleteUserQuery = "DELETE FROM users WHERE user_id = '$userID'";
                 
                 if ($conn->query($deleteUserQuery) === TRUE) {
-                    // User has been deleted successfully, log out and redirect to index.php
-                    session_destroy(); // Destroy the current session
+                    
+                    session_destroy(); 
                     header("Location: index.php");
                     exit();
                 } else {
@@ -68,7 +67,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "Error updating record: " . $conn->error;
         }
     } else {
-        // Error handling if the file upload fails
         echo 'error';
     }
 } 

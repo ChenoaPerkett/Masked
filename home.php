@@ -13,24 +13,27 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 $userID = $_SESSION['user_id'];
-if (isset($_POST["submitArticle"])) {
-    $articleName = $_POST["articleName"];
-    $articleAuthor = $_POST["articleAuthor"];
-    $articleDescription = $_POST["articleDescription"];
 
-    // Process file upload
-    $targetDir = "uploads/"; // Directory to store uploaded images
+$userNameQuery = "SELECT name FROM users WHERE user_id = '$userID'";
+$userNameResult = $conn->query($userNameQuery);
+    $row = $userNameResult->fetch_assoc();
+    $userName = $row['name'];
+
+if (isset($_POST["submitArticle"])) {
+    $articleName = $_POST["articleName"]; // Assuming this is the author's name
+    $articleDescription = $_POST["articleDescription"];
+    $articleCategory = $_POST["articleCategory"];
+    $fullArticle = $_POST["articleFull"];
+    $targetDir = "uploads/";
     $targetFile = $targetDir . basename($_FILES["articleImage"]["name"]);
 
     if (move_uploaded_file($_FILES["articleImage"]["tmp_name"], $targetFile)) {
-        // File uploaded successfully
-       // $userID = $userID; // Assuming you have the user's ID already
 
-        $sql = "INSERT INTO articles (user_id, title, description, author, date, image) 
-                    VALUES ('$userID', '$articleName', '$articleDescription', '$articleAuthor', NOW(), '$targetFile')";
+        $sql = "INSERT INTO articles (user_id, title, description, author, date, image, catorgory, full_article) 
+                VALUES ('$userID', '$articleName', '$articleDescription', '$userName', NOW(), '$targetFile', '$articleCategory', '$fullArticle')";
 
-        if ($conn->query($sql) === TRUE) {
-            //echo "Article added successfully";
+if ($conn->query($sql) === TRUE) {
+
         } else {
             echo "Error: " . $conn->error;
         }
@@ -39,6 +42,8 @@ if (isset($_POST["submitArticle"])) {
     }
 }
 
+$categorySql = "SELECT category_id, category_name FROM Admin_Categories";
+$categoryResult = $conn->query($categorySql);
 
 
 $conn->close();
@@ -99,9 +104,7 @@ $conn->close();
                                 <div class='col-lg-6 col-sm-12'> <label for='articleCategory'>Article Category:</label><br>
                                 <select class='form-control' name='articleCategory' id='articleCategory' required>
                                     <option value='' disabled selected>Select a category</option>";
-                                    // Establish a new database connection if needed
-                                    $categorySql = "SELECT category_id, category_name FROM Admin_Categories";
-                                    $categoryResult = $conn->query($categorySql);
+
                             
                                     if ($categoryResult->num_rows > 0) {
                                         while ($row = $categoryResult->fetch_assoc()) {

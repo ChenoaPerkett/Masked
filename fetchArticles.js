@@ -28,18 +28,8 @@ function fetchArticles(UserID, articleType) {
                                     <input type="hidden" class="user-id" value="${article.user_id}">
                                     <h5 class="card-title">${article.title}</h5>
                                     <p class="card-text">${article.description}</p>
-                                    <p class="card-text"><small class="text-muted">Author: <a href="profile.php?user=${article.user_id}">${article.author}</a></small></p>
+                                    <p class="card-text"><small class="text-muted">Author: <a href="profile.php?user=${article.user_id}">${article.author}</a></small>            Category: ${article.catorgory}</p>
                                     <p class="card-text"><small class="text-muted">Date: ${article.date}</small> </p>
-                                    <label class="ui-bookmark">
-                                    <input type="checkbox">
-                                    <div class="bookmark">
-                                      <svg viewBox="0 0 32 32">
-                                        <g>
-                                          <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z"></path>
-                                        </g>
-                                      </svg>
-                                    </div>
-                                  </label>
                                 <div>
                                 <fieldset class="rating">
                          <input type="radio" id="star5" name="rating_${article.article_id}" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
@@ -48,15 +38,10 @@ function fetchArticles(UserID, articleType) {
                          <input type="radio" id="star2" name="rating_${article.article_id}" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
                          <input type="radio" id="star1" name="rating_${article.article_id}" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
                          <input type="radio" class="reset-option" name="rating" value="reset" />
-                         <!-- Comment input -->
                      </fieldset>
                      <textarea class="form-control" rows="3" placeholder="Leave a review/comment" id="comment_${article.article_id}"></textarea>
-
-                     <!-- Image upload -->
                      <label for="reviewImage">Upload Image:</label>
                      <input type="file" class="form-control" name="reviewImage" id="reviewImage" accept="image/*" />
- 
-                     <!-- Submit button for rating and review -->
                      <button class="btn btn-dark" onclick="submitRatingAndReview(${article.article_id}, ${UserID})">Submit Rating & Review</button>
                                 </div>
                                 </div>
@@ -64,7 +49,6 @@ function fetchArticles(UserID, articleType) {
                         </div>
                     </div>`;
 
-                // Append the card HTML to the "articles" div
                 $('#articles').append(cardHtml);
             });
         },
@@ -74,7 +58,7 @@ function fetchArticles(UserID, articleType) {
     });
 }
 
-function submitRatingAndReview(articleID, userID,rating,comment ) {
+function submitRatingAndReview(articleID, userID, rating, comment) {
     var reviewImage = $("#reviewImage")[0].files[0];
     var rating = $("input[name='rating_" + articleID + "']:checked").val();
     var comment = $("textarea[id='comment_" + articleID + "']").val();
@@ -85,17 +69,15 @@ function submitRatingAndReview(articleID, userID,rating,comment ) {
         formData.append('rating', rating);
 
         $.ajax({
-            url: 'rating.php', // Server-side script to handle the submission
+            url: 'rating.php',
             method: 'POST',
             data: formData,
             contentType: false,
             processData: false,
             success: function (response) {
-                // Handle success (e.g., show a confirmation message)
                 console.log('Rating and review submitted successfully.');
             },
             error: function () {
-                // Handle error (e.g., show an error message)
                 console.log('Error submitting rating and review');
             }
         });
@@ -111,7 +93,7 @@ function submitRatingAndReview(articleID, userID,rating,comment ) {
         }
 
         $.ajax({
-            url: 'review.php', // Server-side script to handle the submission
+            url: 'review.php',
             method: 'POST',
             data: formData,
             contentType: false,
@@ -129,15 +111,14 @@ function submitRatingAndReview(articleID, userID,rating,comment ) {
 }
 
 
-// Function to toggle between "Local" and "Global" articles
 function toggleArticles(articleType) {
-    $('#localLink, #globalLink').removeClass('active'); // Remove active class from both links
-    $('#' + articleType + 'Link').addClass('active'); // Add active class to the clicked link
-    fetchArticles(UserID, articleType); // Fetch articles based on the type
+    $('#localLink, #globalLink').removeClass('active');
+    $('#' + articleType + 'Link').addClass('active');
+    fetchArticles(UserID, articleType);
 }
 
-// Call the fetchArticles function to load articles on page load
+
 $(document).ready(function () {
-    $('#localLink').addClass('active'); // Add active class to the "Local" link
-    fetchArticles(UserID, 'local'); // Load local articles initially // Use the JavaScript variable
+    $('#localLink').addClass('active');
+    fetchArticles(UserID, 'local');
 });

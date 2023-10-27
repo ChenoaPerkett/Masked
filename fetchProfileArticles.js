@@ -23,16 +23,7 @@ function fetchArticles(userID) {
                                     <p class="card-text">${article.description}</p>
                                     <p class="card-text"><small class="text-muted">Author: ${article.author}</small></p>
                                     <p class="card-text"><small class="text-muted">Date: ${article.date}</small> </p>
-                                    <label class="ui-bookmark">
-                                    <input type="checkbox">
-                                    <div class="bookmark">
-                                      <svg viewBox="0 0 32 32">
-                                        <g>
-                                          <path d="M27 4v27a1 1 0 0 1-1.625.781L16 24.281l-9.375 7.5A1 1 0 0 1 5 31V4a4 4 0 0 1 4-4h14a4 4 0 0 1 4 4z"></path>
-                                        </g>
-                                      </svg>
-                                    </div>
-                                  </label>
+                                    <p class="card-text"><small class="text-muted">Category: ${article.catorgory}</small> </p>
                                 </div>
                             </div>
                         </div>
@@ -47,5 +38,3 @@ function fetchArticles(userID) {
         }
     });
 }
-
-// Call the fetchArticles function to load articles on page load

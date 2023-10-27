@@ -58,14 +58,12 @@
                 $username = "root";
                 $dbpassword = "";
                 $dbname = "u19109572";
-
-                // Create a database connection
                 $conn = new mysqli($servername, $username, $dbpassword, $dbname);
 
                 if ($conn->connect_error) {
                     die("Connection failed: " . $conn->connect_error);
                 }
-                // Fetch articles from the database
+
                 $articleQuery = "SELECT * FROM articles";
                 $articleResult = $conn->query($articleQuery);
 
