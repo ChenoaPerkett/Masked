@@ -22,6 +22,8 @@ function fetchArticles(UserID, articleType) {
                             </div>
                             <div class="col-md-8">
                                 <div class="card-body">
+                                    <input type="hidden" class="article-id" value="${article.article_id}">
+                                    <input type="hidden" class="user-id" value="${article.user_id}">
                                     <h5 class="card-title">${article.title}</h5>
                                     <p class="card-text">${article.description}</p>
                                     <p class="card-text"><small class="text-muted">Author: ${article.author}</small></p>
@@ -36,6 +38,25 @@ function fetchArticles(UserID, articleType) {
                                       </svg>
                                     </div>
                                   </label>
+                                <div>
+                                <fieldset class="rating">
+                         <input type="radio" id="star5" name="rating_${article.article_id}" value="5" /><label class = "full" for="star5" title="Awesome - 5 stars"></label>
+                         <input type="radio" id="star4" name="rating_${article.article_id}" value="4" /><label class = "full" for="star4" title="Pretty good - 4 stars"></label>
+                         <input type="radio" id="star3" name="rating_${article.article_id}" value="3" /><label class = "full" for="star3" title="Meh - 3 stars"></label>
+                         <input type="radio" id="star2" name="rating_${article.article_id}" value="2" /><label class = "full" for="star2" title="Kinda bad - 2 stars"></label>
+                         <input type="radio" id="star1" name="rating_${article.article_id}" value="1" /><label class = "full" for="star1" title="Sucks big time - 1 star"></label>
+                         <input type="radio" class="reset-option" name="rating" value="reset" />
+                         <!-- Comment input -->
+                     </fieldset>
+                     <textarea class="form-control" rows="3" placeholder="Leave a review/comment" id="comment_${article.article_id}"></textarea>
+
+                     <!-- Image upload -->
+                     <label for="reviewImage">Upload Image:</label>
+                     <input type="file" class="form-control" name="reviewImage" id="reviewImage" accept="image/*" />
+ 
+                     <!-- Submit button for rating and review -->
+                     <button class="btn btn-dark" onclick="submitRatingAndReview(${article.article_id}, ${UserID})">Submit Rating & Review</button>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -50,6 +71,61 @@ function fetchArticles(UserID, articleType) {
         }
     });
 }
+
+function submitRatingAndReview(articleID, userID,rating,comment ) {
+    var reviewImage = $("#reviewImage")[0].files[0];
+    var rating = $("input[name='rating_" + articleID + "']:checked").val();
+    var comment = $("textarea[id='comment_" + articleID + "']").val();
+    if (rating) {
+        var formData = new FormData();
+        formData.append('articleID', articleID);
+        formData.append('userID', userID);
+        formData.append('rating', rating);
+
+        $.ajax({
+            url: 'rating.php', // Server-side script to handle the submission
+            method: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                // Handle success (e.g., show a confirmation message)
+                console.log('Rating and review submitted successfully.');
+            },
+            error: function () {
+                // Handle error (e.g., show an error message)
+                console.log('Error submitting rating and review');
+            }
+        });
+    }
+    if (comment) {
+        var formData = new FormData();
+        formData.append('articleID', articleID);
+        formData.append('userID', userID);
+        formData.append('comment', comment);
+
+        if (reviewImage) {
+            formData.append('reviewImage', reviewImage);
+        }
+
+        $.ajax({
+            url: 'review.php', // Server-side script to handle the submission
+            method: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                // Handle success (e.g., show a confirmation message)
+                console.log('Rating and review submitted successfully.');
+            },
+            error: function () {
+                // Handle error (e.g., show an error message)
+                console.log('Error submitting rating and review');
+            }
+        });
+    }
+}
+
 
 // Function to toggle between "Local" and "Global" articles
 function toggleArticles(articleType) {

@@ -59,6 +59,9 @@ $conn->close();
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
     <link rel="stylesheet" href="style/styleHome.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+   
     <script src="homeScript.js"></script>
     <script src="fetchArticles.js"></script>
     <title>Home</title>
@@ -81,8 +84,6 @@ $conn->close();
             <div class="links">
     <a href="javascript:void(0);" id="localLink" onclick="toggleArticles('local')">Local</a> |
     <a href="javascript:void(0);" id="globalLink" onclick="toggleArticles('global')">Global</a>
-                <!-- <a href="#">Local </a>|
-                <a href="#"> Global</a> -->
             </div>
         </div>
         <div id="archives" class="col-10 offset-1">
