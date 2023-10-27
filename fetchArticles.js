@@ -28,7 +28,7 @@ function fetchArticles(UserID, articleType) {
                                     <input type="hidden" class="user-id" value="${article.user_id}">
                                     <h5 class="card-title">${article.title}</h5>
                                     <p class="card-text">${article.description}</p>
-                                    <p class="card-text"><small class="text-muted">Author: <a href="profile.php?user=${article.user_id}">${article.name}</a></small></p>
+                                    <p class="card-text"><small class="text-muted">Author: <a href="profile.php?user=${article.user_id}">${article.author}</a></small></p>
                                     <p class="card-text"><small class="text-muted">Date: ${article.date}</small> </p>
                                     <label class="ui-bookmark">
                                     <input type="checkbox">

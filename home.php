@@ -92,7 +92,11 @@ $conn->close();
                     echo     "<form action='home.php' method='POST' enctype='multipart/form-data'>
                             <div class='row p-2 card-header'>
                                 <div class='col-lg-6 col-sm-12'>
-                                <label for='articleCategory'>Article Category:</label><br>
+                                    <label for='articleName'>Article Name:</label><br>
+                                    <input type='text' class='form-control' name='articleName' /><br>	
+                                </div>
+
+                                <div class='col-lg-6 col-sm-12'> <label for='articleCategory'>Article Category:</label><br>
                                 <select class='form-control' name='articleCategory' id='articleCategory' required>
                                     <option value='' disabled selected>Select a category</option>";
                                     // Establish a new database connection if needed
@@ -109,15 +113,12 @@ $conn->close();
                                     echo "
                                 </select>
                                 </div>
-
-                                <div class='col-lg-6 col-sm-12'>
-                                    <label for='articleAuthor'>Article Author:</label><br>							
-                                    <input type='text' class='form-control' name='articleAuthor' /><br>
-                                </div>
                                 <div class='form-group'>
 
                                 <label for='articleDescription'>Article Description:</label><br>
 								<input type='text' class='form-control' name='articleDescription' /><br>
+                                <label for='articleFull'>Full Article:</label><br>
+								<input type='text' class='form-control' name='articleFull' /><br>
 
 								<label for='articleImage'>Upload Image:</label><br>
                                  <input type='file' class='form-control' name='articleImage' id='articleImage' accept='image/*' required /><br>
