@@ -92,8 +92,22 @@ $conn->close();
                     echo     "<form action='home.php' method='POST' enctype='multipart/form-data'>
                             <div class='row p-2 card-header'>
                                 <div class='col-lg-6 col-sm-12'>
-                                    <label for='articleName'>Article Name:</label><br>
-                                    <input type='text' class='form-control' name='articleName' /><br>	
+                                <label for='articleCategory'>Article Category:</label><br>
+                                <select class='form-control' name='articleCategory' id='articleCategory' required>
+                                    <option value='' disabled selected>Select a category</option>";
+                                    // Establish a new database connection if needed
+                                    $categorySql = "SELECT category_id, category_name FROM Admin_Categories";
+                                    $categoryResult = $conn->query($categorySql);
+                            
+                                    if ($categoryResult->num_rows > 0) {
+                                        while ($row = $categoryResult->fetch_assoc()) {
+                                            $categoryId = $row['category_id'];
+                                            $categoryName = $row['category_name'];
+                                            echo "<option value='$categoryId'>$categoryName</option>";
+                                        }
+                                    }
+                                    echo "
+                                </select>
                                 </div>
 
                                 <div class='col-lg-6 col-sm-12'>
