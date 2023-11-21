@@ -2,7 +2,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 85vh;
+    min-height: 90vh;
     /* min-width: 90vh;   */
 } 
 #headings p{
@@ -23,8 +23,8 @@ img{
 #profile {
     background-color: #ffffffd5;
     border-radius: 5px;
-    min-height: 60vh;
-    max-height: 400px; /* Adjust the max height as needed */
+    min-height: 95vh;
+    max-height: 400px;
     overflow-y: auto;
 }
 body{

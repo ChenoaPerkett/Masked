@@ -16,7 +16,7 @@ if ($conn->connect_error) {
     $email = isset( $_POST["loginEmail"]) ? $_POST["loginEmail"] : null;
 	$pass = isset($_POST["loginPass"]) ? $_POST["loginPass"] : null;
 
-	$query = "SELECT * FROM users WHERE email = '$email' AND password = '$pass'";
+	$query = "SELECT * FROM users WHERE email = '$email'";
     $result = $conn->query($query);
 	$row = mysqli_fetch_array($result);
 	$userID = $row['user_id'];
